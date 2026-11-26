@@ -10,6 +10,8 @@ It launches with the **University of Calgary**, and the data model already suppo
 
 > Built for **ENTI 333 (L02, Fall 2026) at the Haskayne School of Business, University of Calgary**, as the AI-assisted software development group project. It is a student project and is **not affiliated with or endorsed by the University of Calgary**.
 
+**Live site: https://chinook-exchange.vercel.app**
+
 ![Landing page](docs/screenshots/landing.jpg)
 
 ---
@@ -87,6 +89,7 @@ The full requirements are in the [product requirements document](docs/PRD.md). T
 |---|---|---|
 | Framework | [Next.js 16](https://nextjs.org) (App Router, React 19, Server Components, Server Actions) | One codebase for pages and back-end logic. Forms work without client-side JavaScript. |
 | Styling | [Tailwind CSS 4](https://tailwindcss.com) with design tokens from our mockups | Fast iteration that stays consistent with the mockup style. |
+| Hosting | [Vercel](https://vercel.com) (free Hobby plan) | Built by the makers of Next.js. Deploys automatically on every push. |
 | Database and auth | [Supabase](https://supabase.com) (Postgres, Auth, row-level security) | A managed database and authentication service with a free tier, and privacy rules enforced in SQL. |
 | Language | TypeScript, with database types generated from the schema | Catches schema mismatches at build time. |
 | AI tooling | Claude (ideation, PRD, mockups) and **Claude Code** (main development) | See [How we built it with AI](#how-we-built-it-with-ai). |
@@ -155,6 +158,14 @@ supabase db query --linked "insert into public.admins (user_id, university_id) s
 | `npm run typecheck` | TypeScript check |
 | `supabase gen types typescript --linked > src/lib/database.types.ts` | Regenerate database types after a schema change |
 
+### Deployment
+
+The live site runs on **Vercel's free Hobby plan**, in the Montreal region (`yul1`), next to the Supabase database in `ca-central-1`. Every push to `main` deploys automatically. To deploy your own copy:
+
+1. Import the repo in Vercel (it detects Next.js automatically).
+2. Add the two `NEXT_PUBLIC_SUPABASE_*` environment variables.
+3. In `supabase/config.toml`, set `site_url` to your live URL and run `supabase config push`.
+
 > **Free plan note:** Supabase pauses free projects after a week with no activity. To resume, open the project in the dashboard and click **Restore**.
 
 ## Project structure
@@ -211,7 +222,6 @@ The MVP covers the PRD's core journey. Not built yet:
 - Archiving finished semester boards as read-only.
 - Marking a checklist item as "not applicable".
 - Photo upload for activity ideas (they currently choose from the bundled photos).
-- Deployment to Vercel. It runs locally against a hosted Supabase database.
 - Multiple universities in the interface. The data model already supports them.
 
 ## Team
