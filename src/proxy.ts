@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
   const signedIn = Boolean(data?.claims);
   const path = request.nextUrl.pathname;
 
-  const needsAuth = ["/dashboard", "/events", "/community", "/admin", "/profile"].some((p) => path.startsWith(p))
+  const needsAuth = ["/dashboard", "/events", "/guides", "/community", "/admin", "/profile"].some((p) => path.startsWith(p))
     || (path.startsWith("/onboarding") && path !== "/onboarding/about");
 
   if (needsAuth && !signedIn) {

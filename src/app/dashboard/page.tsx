@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { setArrived } from "@/app/actions/app";
 import { AppHeader, PhotoBand } from "@/components/app-header";
-import { Alert, Apps, Arrow, Bus, Check, Clipboard, External, Home, Info, Phone, Plane, Snow } from "@/components/icons";
+import { Alert, Arrow, Check, Clipboard, External, Home, Info, Plane } from "@/components/icons";
 import { createClient } from "@/lib/supabase/server";
 import { daysUntil, fmt, itemApplies, requireMember, stayLength } from "@/lib/data";
 import { CATEGORY_STYLE } from "@/lib/constants";
 import { CheckItem } from "./check-item";
+import { guideIcon } from "@/components/guide-icons";
 
 export const metadata: Metadata = { title: "Before arrival" };
 
-const GUIDE_ICONS: Record<string, React.ReactNode> = { bus: <Bus />, snow: <Snow />, phone: <Phone />, apps: <Apps />, home: <Home /> };
 
 export default async function Dashboard() {
   const viewer = await requireMember();
@@ -157,11 +157,12 @@ export default async function Dashboard() {
               <h2 className="h mt-2 text-[22px] font-bold">Helpful guides <span className="tag align-middle font-sans">Optional</span></h2>
               <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
                 {general.map((g) => (
-                  <article key={g.id} className="card flex flex-col gap-2.5 p-6">
-                    <span className="grid h-11 w-11 place-items-center rounded-[14px]" style={{ background: g.tone }} aria-hidden="true">{GUIDE_ICONS[g.icon] ?? <Info />}</span>
+                  <Link key={g.id} href={`/guides/${g.slug}`} className="card group flex flex-col gap-2.5 p-6 no-underline transition-transform hover:-translate-y-0.5">
+                    <span className="grid h-11 w-11 place-items-center rounded-[14px]" style={{ background: g.tone }} aria-hidden="true">{guideIcon(g.icon)}</span>
                     <h3 className="h text-xl font-bold">{g.title}</h3>
                     <p className="m-0 text-sm leading-normal text-ink-2">{g.summary}</p>
-                  </article>
+                    <span className="mt-auto flex items-center gap-1.5 pt-1 text-[13px] font-bold uppercase tracking-[.1em] text-navy">Read guide <Arrow /></span>
+                  </Link>
                 ))}
               </div>
             </>

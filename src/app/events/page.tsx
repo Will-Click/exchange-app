@@ -166,18 +166,19 @@ export default async function EventsPage({ searchParams }: PageProps<"/events">)
             </div>
             <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
               {(ideas ?? []).map((i) => (
-                <article key={i.id} className="flex flex-col gap-3">
+                <Link key={i.id} href={`/events/ideas/${i.id}`} className="group flex flex-col gap-3 no-underline">
                   <div className="relative h-[220px] overflow-hidden rounded-3xl bg-navy-2">
-                    {i.image && <img src={i.image} alt="" className="h-full w-full object-cover" />}
+                    {i.image && <img src={i.image} alt="" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />}
                     <span className="chip absolute bottom-3 left-3 bg-white">{i.season_note}</span>
                   </div>
                   <div className="flex gap-2">
                     <span className={`chip ${CATEGORY_STYLE[i.category].chip}`}>{i.category === "city" ? city : CATEGORY_STYLE[i.category].label}</span>
                     {i.tags.map((t) => <span key={t} className="chip bg-sand">{t}</span>)}
                   </div>
-                  <h3 className="h text-[22px] font-bold">{i.title}</h3>
+                  <h3 className="h text-[22px] font-bold group-hover:underline group-hover:decoration-teal group-hover:decoration-2 group-hover:underline-offset-4">{i.title}</h3>
                   <p className="m-0 text-sm text-ink-2">{i.description}</p>
-                </article>
+                  <span className="flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-[.1em] text-navy">See details <Arrow /></span>
+                </Link>
               ))}
             </div>
           </section>

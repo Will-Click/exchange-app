@@ -41,10 +41,12 @@ export type Database = {
     Tables: {
       activity_ideas: {
         Row: {
+          body: string
           category: Database["public"]["Enums"]["event_category"]
           description: string
           id: string
           image: string | null
+          links: Json
           season_note: string
           sort: number
           tags: string[]
@@ -52,10 +54,12 @@ export type Database = {
           university_id: string
         }
         Insert: {
+          body?: string
           category: Database["public"]["Enums"]["event_category"]
           description: string
           id?: string
           image?: string | null
+          links?: Json
           season_note: string
           sort?: number
           tags?: string[]
@@ -63,10 +67,12 @@ export type Database = {
           university_id: string
         }
         Update: {
+          body?: string
           category?: Database["public"]["Enums"]["event_category"]
           description?: string
           id?: string
           image?: string | null
+          links?: Json
           season_note?: string
           sort?: number
           tags?: string[]
@@ -285,6 +291,7 @@ export type Database = {
       }
       guides: {
         Row: {
+          body: string
           category: string
           icon: string
           id: string
@@ -297,6 +304,7 @@ export type Database = {
           university_id: string
         }
         Insert: {
+          body?: string
           category?: string
           icon?: string
           id?: string
@@ -309,6 +317,7 @@ export type Database = {
           university_id: string
         }
         Update: {
+          body?: string
           category?: string
           icon?: string
           id?: string
