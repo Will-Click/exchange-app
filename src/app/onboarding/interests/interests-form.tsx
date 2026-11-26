@@ -7,7 +7,7 @@ import { Switch } from "@/components/switch";
 import { INTERESTS } from "@/lib/constants";
 import { StepNav } from "../shell";
 
-export function InterestsForm({ initial }: { initial: { interests: string[]; custom: string[]; show: boolean } }) {
+export function InterestsForm({ initial, editing }: { initial: { interests: string[]; custom: string[]; show: boolean }; editing: boolean }) {
   const [state, action, pending] = useActionState(saveInterests, undefined);
   const [picked, setPicked] = useState<string[]>(initial.interests);
   const [custom, setCustom] = useState<string[]>(initial.custom);
@@ -71,7 +71,7 @@ export function InterestsForm({ initial }: { initial: { interests: string[]; cus
 
       <Switch name="show_interests" defaultChecked={initial.show}>Show my interests on my profile, so classmates can find shared plans</Switch>
 
-      <StepNav back="/onboarding/exchange" pending={pending} />
+      <StepNav back={editing ? "/profile" : "/onboarding/exchange"} pending={pending} label={editing ? "Save changes" : undefined} />
     </form>
   );
 }

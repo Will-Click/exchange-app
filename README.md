@@ -49,7 +49,7 @@ supabase db query --linked "insert into public.admins (user_id, university_id) s
 | `src/app/actions/*` | Server actions (all writes) |
 | `src/lib/brand.ts` | Product name. Change it here. |
 | `supabase/migrations` | Schema and row-level security policies |
-| `supabase/seed.sql` | UCalgary, Winter/Spring/Fall 2027, checklist, events, demo members |
+| `supabase/seed.sql` | UCalgary, 2027 terms (only Winter 2027 open), checklist, guides, events — no user accounts |
 
 ## How privacy works
 

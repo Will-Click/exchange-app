@@ -12,16 +12,18 @@ export default async function AboutPage() {
   return (
     <OnboardingShell
       step={1}
+      editing={Boolean(p?.onboarded_at)}
       title="About you"
       note="We never ask for passport numbers, document scans, visa files or home addresses."
       aside={!viewer && <span className="text-sm text-muted">Already have an account? <Link href="/login" className="font-bold">Log in</Link></span>}
     >
       <AboutForm
         signedIn={Boolean(viewer)}
+        editing={Boolean(p?.onboarded_at)}
         email={viewer?.user.email ?? ""}
         initial={{
-          full_name: p?.full_name ?? "",
-          display_name: p?.display_name ?? "",
+          first_name: p?.first_name ?? "",
+          last_name: p?.last_name ?? "",
           home_country: p?.home_country ?? "",
           major: p?.major ?? "",
           show_major: p?.show_major ?? true,

@@ -9,11 +9,11 @@ import { COUNTRIES, MAJORS } from "@/lib/constants";
 import { StepNav } from "../shell";
 
 type Initial = {
-  full_name: string; display_name: string; home_country: string; major: string;
+  first_name: string; last_name: string; home_country: string; major: string;
   show_major: boolean; home_university: string; show_home_university: boolean;
 };
 
-export function AboutForm({ signedIn, email, initial }: { signedIn: boolean; email: string; initial: Initial }) {
+export function AboutForm({ signedIn, editing, email, initial }: { signedIn: boolean; editing: boolean; email: string; initial: Initial }) {
   const [state, action, pending] = useActionState(saveAbout, undefined);
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
@@ -30,12 +30,12 @@ export function AboutForm({ signedIn, email, initial }: { signedIn: boolean; ema
 
       <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
         <div className="flex flex-col gap-2">
-          <label className="lbl" htmlFor="nm">Full name <span className="req">Required</span><span className="priv"><Lock />Private</span></label>
-          <input id="nm" name="full_name" className="inp" type="text" autoComplete="name" defaultValue={f.full_name} required />
+          <label className="lbl" htmlFor="fn">First name <span className="req">Required</span><span className="pub">Shown on your profile</span></label>
+          <input id="fn" name="first_name" className="inp" type="text" autoComplete="given-name" maxLength={40} defaultValue={f.first_name} required />
         </div>
         <div className="flex flex-col gap-2">
-          <label className="lbl" htmlFor="dn">Display name <span className="req">Required</span><span className="pub">Shown on posts</span></label>
-          <input id="dn" name="display_name" className="inp" type="text" maxLength={40} defaultValue={f.display_name} required />
+          <label className="lbl" htmlFor="ln">Last name <span className="req">Required</span><span className="pub">Shown on your profile</span></label>
+          <input id="ln" name="last_name" className="inp" type="text" autoComplete="family-name" maxLength={40} defaultValue={f.last_name} required />
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function AboutForm({ signedIn, email, initial }: { signedIn: boolean; ema
         <Switch name="show_home_university" defaultChecked={initial.show_home_university}>Show my home university on my profile</Switch>
       </div>
 
-      <StepNav back="/" pending={pending} label={signedIn ? "Save & continue" : "Create account & continue"} />
+      <StepNav back={editing ? "/profile" : "/"} pending={pending} label={editing ? "Save changes" : signedIn ? "Save & continue" : "Create account & continue"} />
     </form>
   );
 }

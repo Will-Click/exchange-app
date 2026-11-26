@@ -9,7 +9,8 @@ import { StepNav } from "../shell";
 type Uni = { id: string; name: string; city: string; region: string | null; country: string };
 type Term = { id: string; name: string };
 
-export function ExchangeForm({ universities, terms, initial }: {
+export function ExchangeForm({ universities, terms, initial, editing }: {
+  editing: boolean;
   universities: Uni[];
   terms: Term[];
   initial: { participant_type: string; terms: string[]; arrival_date: string; arrival_unsure: boolean; departure_note: string; housing_status: string };
@@ -103,7 +104,7 @@ export function ExchangeForm({ universities, terms, initial }: {
         )}
       </fieldset>
 
-      <StepNav back="/onboarding/about" pending={pending} />
+      <StepNav back={editing ? "/profile" : "/onboarding/about"} pending={pending} label={editing ? "Save changes" : undefined} />
     </form>
   );
 }

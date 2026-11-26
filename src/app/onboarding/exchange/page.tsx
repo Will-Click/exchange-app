@@ -18,11 +18,12 @@ export default async function ExchangePage() {
   ]);
   const p = viewer.profile;
   return (
-    <OnboardingShell step={2} title="Your exchange"
+    <OnboardingShell step={2} editing={Boolean(viewer.profile.onboarded_at)} title="Your exchange"
       note="Only your display name and the details you choose are visible to other members. We never ask for passport numbers or documents.">
       <ExchangeForm
         universities={universities ?? []}
         terms={terms ?? []}
+        editing={Boolean(p.onboarded_at)}
         initial={{
           participant_type: p.participant_type,
           terms: viewer.terms.map((t) => t.id),

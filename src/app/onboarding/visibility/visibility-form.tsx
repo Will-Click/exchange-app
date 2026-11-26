@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import { saveVisibility } from "@/app/actions/auth";
 import { Eye, Lock } from "@/components/icons";
@@ -12,7 +11,7 @@ type Initial = {
   show_interests: boolean; show_home_university: boolean;
   social_handle: string; show_social: boolean;
   contact_email: string; show_contact_email: boolean;
-  phone: string; show_phone: boolean; accepted: boolean;
+  phone: string; show_phone: boolean;
 };
 
 export function VisibilityForm({ person, initial, editing }: {
@@ -33,7 +32,7 @@ export function VisibilityForm({ person, initial, editing }: {
         <div className="flex min-w-0 flex-[999_1_400px] flex-col gap-7">
           <section aria-labelledby="pf">
             <h3 id="pf" className="h mb-1.5 text-[22px] font-bold">On your profile</h3>
-            <Row title="Display name" desc="Always visible to members — it's how you appear on posts.">
+            <Row title="Name" desc="Always visible to members — it's how you appear on posts.">
               <span className="chip bg-[#E3F6F4] text-teal-ink">Always on</span>
             </Row>
             <Row title="Interests" desc={person.interests.join(", ") || "None picked yet"}>
@@ -56,10 +55,6 @@ export function VisibilityForm({ person, initial, editing }: {
             <p className="mt-2 mb-0 flex items-center gap-2 text-[13px] text-muted"><Lock />Your login email is never copied here automatically.</p>
           </section>
 
-          <label className="flex items-start gap-3 rounded-2xl bg-white px-4 py-3.5 text-sm leading-normal shadow-[inset_0_0_0_1.5px_#E2DDCF]">
-            <input type="checkbox" name="accept_rules" defaultChecked={initial.accepted} className="mt-px h-5 w-5 flex-none accent-navy" required />
-            <span>I&apos;ve read the <Link href="/rules" target="_blank">community rules</Link> — no harassment, spam, scams, or sharing other people&apos;s personal info.</span>
-          </label>
         </div>
 
         <aside className="sticky top-6 flex min-w-0 flex-[1_1_300px] flex-col gap-2.5" aria-label="Profile preview">
@@ -76,7 +71,7 @@ export function VisibilityForm({ person, initial, editing }: {
         </aside>
       </div>
 
-      <StepNav back="/onboarding/interests" pending={pending} label={editing ? "Save profile" : "Finish & see my dashboard"} />
+      <StepNav back={editing ? "/profile" : "/onboarding/interests"} pending={pending} label={editing ? "Save changes" : "Finish & see my dashboard"} />
     </form>
   );
 }

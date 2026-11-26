@@ -185,7 +185,6 @@ export default async function Landing() {
           </div>
           <nav aria-label="Trust" className="flex flex-col gap-2.5">
             <strong className="text-[13px] uppercase tracking-[.12em] text-sun">Trust</strong>
-            <Link className="text-sm text-mist no-underline hover:text-sun" href="/rules">Community rules</Link>
             <Link className="text-sm text-mist no-underline hover:text-sun" href="/privacy">Privacy</Link>
           </nav>
         </div>

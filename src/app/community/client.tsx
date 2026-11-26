@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { createPost, createReply, deletePost, deleteReply, reportContent } from "@/app/actions/app";
 import { Chat, Flag } from "@/components/icons";
@@ -21,7 +20,7 @@ export function Composer({ termId, termName, initial, color }: { termId: string;
       </div>
       {state?.error && <p className="err" role="alert">{state.error}</p>}
       <div className="flex flex-wrap items-center justify-between gap-2.5 sm:pl-[58px]">
-        <span className="text-[13px] text-muted">Posting to {termName} · <Link href="/rules">Community rules</Link></span>
+        <span className="text-[13px] text-muted">Posting to {termName}</span>
         <button className="btn btn-sm" type="submit" disabled={pending}>{pending ? "Posting…" : "Post"}</button>
       </div>
     </form>

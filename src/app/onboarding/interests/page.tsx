@@ -11,9 +11,9 @@ export default async function InterestsPage() {
   if (!viewer) redirect("/login");
   const p = viewer.profile;
   return (
-    <OnboardingShell step={3} title="Interests"
+    <OnboardingShell step={3} editing={Boolean(viewer.profile.onboarded_at)} title="Interests"
       note="Interests help classmates find shared plans. You decide whether they show on your profile.">
-      <InterestsForm initial={{ interests: p.interests, custom: p.custom_interests, show: p.show_interests }} />
+      <InterestsForm editing={Boolean(p.onboarded_at)} initial={{ interests: p.interests, custom: p.custom_interests, show: p.show_interests }} />
     </OnboardingShell>
   );
 }

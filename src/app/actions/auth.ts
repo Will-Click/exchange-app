@@ -29,15 +29,17 @@ export async function logOut() {
   redirect("/");
 }
 
-const ABOUT_FIELDS = ["full_name", "display_name", "email", "home_country", "major", "home_university"];
+const ABOUT_FIELDS = ["first_name", "last_name", "email", "home_country", "major", "home_university"];
 
 /** Onboarding step 1. Creates the account when signed out; updates the profile when signed in. */
 export async function saveAbout(_: FormState, form: FormData): Promise<FormState> {
   const fields = keep(form, ABOUT_FIELDS);
-  const { full_name, display_name, home_country } = fields;
-  if (!full_name) return { error: "Add your full name.", fields };
-  if (!display_name) return { error: "Add a display name — it's how you appear on posts.", fields };
-  if (display_name.length > 40) return { error: "Keep your display name under 40 characters.", fields };
+  const { first_name, last_name, home_country } = fields;
+  if (!first_name) return { error: "Add your first name.", fields };
+  if (!last_name) return { error: "Add your last name.", fields };
+  if (first_name.length > 40 || last_name.length > 40) return { error: "Keep each name under 40 characters.", fields };
+  const display_name = `${first_name} ${last_name}`;
+  const full_name = display_name;
   if (!COUNTRIES.includes(home_country)) return { error: "Pick the country you're travelling from.", fields };
 
   const supabase = await createClient();
@@ -65,6 +67,8 @@ export async function saveAbout(_: FormState, form: FormData): Promise<FormState
 
   const { data: uni } = await supabase.from("universities").select("id").eq("slug", "ucalgary").single();
   const { error } = await supabase.from("profiles").update({
+    first_name,
+    last_name,
     full_name,
     display_name,
     home_country,
@@ -76,16 +80,18 @@ export async function saveAbout(_: FormState, form: FormData): Promise<FormState
   }).eq("id", user!.id);
   if (error) return { error: "Couldn't save your details. Try again.", fields };
 
-  await bumpStep(user!.id, 2);
-  redirect("/onboarding/exchange");
+  return next(user!.id, 2, "/onboarding/exchange");
 }
 
-async function bumpStep(userId: string, step: number) {
+/** Advances onboarding, or — once onboarded — sends the member back to their profile after an edit. */
+async function next(userId: string, step: number, path: string): Promise<never> {
   const supabase = await createClient();
-  const { data } = await supabase.from("profiles").select("onboarding_step").eq("id", userId).single();
+  const { data } = await supabase.from("profiles").select("onboarding_step, onboarded_at").eq("id", userId).single();
+  if (data?.onboarded_at) redirect("/profile?saved=1");
   if ((data?.onboarding_step ?? 0) < step) {
     await supabase.from("profiles").update({ onboarding_step: step }).eq("id", userId);
   }
+  redirect(path);
 }
 
 export async function saveExchange(_: FormState, form: FormData): Promise<FormState> {
@@ -122,8 +128,7 @@ export async function saveExchange(_: FormState, form: FormData): Promise<FormSt
     if (e) return { error: "Couldn't join that semester. Try again." };
   }
 
-  await bumpStep(user.id, 3);
-  redirect("/onboarding/interests");
+  return next(user.id, 3, "/onboarding/interests");
 }
 
 export async function saveInterests(_: FormState, form: FormData): Promise<FormState> {
@@ -140,8 +145,7 @@ export async function saveInterests(_: FormState, form: FormData): Promise<FormS
   }).eq("id", user.id);
   if (error) return { error: "Couldn't save. Try again." };
 
-  await bumpStep(user.id, 4);
-  redirect("/onboarding/visibility");
+  return next(user.id, 4, "/onboarding/visibility");
 }
 
 export async function saveVisibility(_: FormState, form: FormData): Promise<FormState> {
@@ -150,7 +154,6 @@ export async function saveVisibility(_: FormState, form: FormData): Promise<Form
   if (!user) redirect("/login");
 
   const fields = keep(form, ["social_handle", "contact_email", "phone"]);
-  if (form.get("accept_rules") !== "on") return { error: "Please confirm you've read the community rules.", fields };
   if (fields.contact_email && !/^\S+@\S+\.\S+$/.test(fields.contact_email)) return { error: "That contact email doesn't look right.", fields };
   if (fields.phone && !/^[+\d][\d\s().-]{5,28}$/.test(fields.phone)) return { error: "That phone number doesn't look right.", fields };
 
@@ -164,7 +167,6 @@ export async function saveVisibility(_: FormState, form: FormData): Promise<Form
     show_contact_email: form.get("show_contact_email") === "on",
     phone: fields.phone || null,
     show_phone: form.get("show_phone") === "on",
-    accepted_rules_at: new Date().toISOString(),
     onboarding_step: 5,
     onboarded_at: existing?.onboarded_at ?? new Date().toISOString(),
   }).eq("id", user.id);

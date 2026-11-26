@@ -12,7 +12,7 @@ export default async function VisibilityPage() {
   if (!viewer) redirect("/login");
   const p = viewer.profile;
   return (
-    <OnboardingShell step={4} title="Profile visibility"
+    <OnboardingShell step={4} editing={Boolean(p.onboarded_at)} title="Profile visibility"
       note={<>Always private: login email · country · arrival &amp; departure dates · housing status.</>}>
       <VisibilityForm
         editing={Boolean(p.onboarded_at)}
@@ -31,7 +31,6 @@ export default async function VisibilityPage() {
           show_contact_email: p.show_contact_email,
           phone: p.phone ?? "",
           show_phone: p.show_phone,
-          accepted: Boolean(p.accepted_rules_at),
         }}
       />
     </OnboardingShell>

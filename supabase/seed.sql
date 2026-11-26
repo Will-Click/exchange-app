@@ -6,10 +6,10 @@
 insert into public.universities (id, slug, name, short_name, city, region, country, is_active, reviewed_countries) values
   ('00000000-0000-4000-8000-000000000001', 'ucalgary', 'University of Calgary', 'UCalgary', 'Calgary', 'Alberta', 'Canada', true, '{Germany}');
 
-insert into public.terms (id, university_id, name, starts_on, ends_on) values
-  ('00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-000000000001', 'Winter 2027', '2027-01-04', '2027-04-30'),
-  ('00000000-0000-4000-8000-0000000000a2', '00000000-0000-4000-8000-000000000001', 'Spring 2027', '2027-05-03', '2027-06-25'),
-  ('00000000-0000-4000-8000-0000000000a3', '00000000-0000-4000-8000-000000000001', 'Fall 2027', '2027-09-01', '2027-12-22');
+insert into public.terms (id, university_id, name, starts_on, ends_on, is_open) values
+  ('00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-000000000001', 'Winter 2027', '2027-01-04', '2027-04-30', true),
+  ('00000000-0000-4000-8000-0000000000a2', '00000000-0000-4000-8000-000000000001', 'Spring 2027', '2027-05-03', '2027-06-25', false),
+  ('00000000-0000-4000-8000-0000000000a3', '00000000-0000-4000-8000-000000000001', 'Fall 2027', '2027-09-01', '2027-12-22', false);  -- only Winter 2027 is open for now
 
 -- ───────────── Required checklist (researched for a German citizen) ─────────────
 insert into public.checklist_items (university_id, slug, kind, title, body, note, link_label, link_url, source, badge, warning, sort, applies_to, last_reviewed) values
