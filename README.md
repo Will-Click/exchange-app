@@ -28,16 +28,13 @@ supabase config push          # after editing supabase/config.toml (auth setting
 
 Free-plan projects pause after a week with no activity. To resume one, open it in the Supabase dashboard and click Restore.
 
-### Demo accounts (seeded into the hosted project)
+### Accounts
 
-Every demo account uses the password `demo-password-2027`.
+There are no demo accounts. Create one from **Sign up**. To make an account an admin (this unlocks the **Admin** tab), run:
 
-| Email | Role |
-|---|---|
-| admin@example.com | Admin for UCalgary (sees the **Admin** tab) |
-| lena@example.com | Student, Winter 2027 |
-
-To try the full sign-up flow, create a new account from **Sign up**.
+```bash
+supabase db query --linked "insert into public.admins (user_id, university_id) select id, '00000000-0000-4000-8000-000000000001' from auth.users where email = 'YOUR_EMAIL';"
+```
 
 ## Where things are
 

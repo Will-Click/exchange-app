@@ -1,5 +1,6 @@
--- Local development seed: University of Calgary, Winter 2027 content, demo members and an admin.
--- Demo accounts (local only; see README): admin@example.com, lena@example.com — password "demo-password-2027".
+-- Seed: University of Calgary, Winter/Spring/Fall 2027 terms, checklist, guides and demo events.
+-- No user accounts. Sign up in the app, then make yourself admin:
+--   insert into public.admins (user_id, university_id) select id, '00000000-0000-4000-8000-000000000001' from auth.users where email = 'you@…';
 
 -- ───────────── University & terms ─────────────
 insert into public.universities (id, slug, name, short_name, city, region, country, is_active, reviewed_countries) values
@@ -74,65 +75,3 @@ insert into public.activity_ideas (university_id, title, description, season_not
 insert into public.partner_offers (university_id, partner, title, code, details, expires_on, is_demo) values
   ('00000000-0000-4000-8000-000000000001', '[Partner business]', 'gear rental discount', '[CODE]', 'Restrictions apply. Redeem on the partner''s site.', '2027-04-30', true);
 
--- ───────────── Demo accounts ─────────────
-do $$
-declare
-  u record;
-begin
-  for u in select * from (values
-    ('00000000-0000-4000-8000-0000000000b0'::uuid, 'admin@example.com', 'Site Admin', 'Admin'),
-    ('00000000-0000-4000-8000-0000000000b1'::uuid, 'lena@example.com', 'Lena Weber', 'Lena'),
-    ('00000000-0000-4000-8000-0000000000b2'::uuid, 'kenji@example.com', 'Kenji Sato', 'Kenji'),
-    ('00000000-0000-4000-8000-0000000000b3'::uuid, 'mateo@example.com', 'Mateo Silva', 'Mateo'),
-    ('00000000-0000-4000-8000-0000000000b4'::uuid, 'priya@example.com', 'Priya Nair', 'Priya')
-  ) as t(id, email, full_name, display_name)
-  loop
-    insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-                            raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
-                            confirmation_token, recovery_token, email_change_token_new, email_change)
-    values ('00000000-0000-0000-0000-000000000000', u.id, 'authenticated', 'authenticated', u.email,
-            extensions.crypt('demo-password-2027', extensions.gen_salt('bf')), now(),
-            '{"provider":"email","providers":["email"]}',
-            jsonb_build_object('full_name', u.full_name, 'display_name', u.display_name),
-            now(), now(), '', '', '', '');
-    insert into auth.identities (provider_id, user_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
-    values (u.id::text, u.id, jsonb_build_object('sub', u.id::text, 'email', u.email), 'email', now(), now(), now());
-  end loop;
-end $$;
-
-update public.profiles set
-  university_id = '00000000-0000-4000-8000-000000000001',
-  onboarded_at = now(), onboarding_step = 5, accepted_rules_at = now(), arrival_date = '2027-01-03'
-where id in ('00000000-0000-4000-8000-0000000000b0', '00000000-0000-4000-8000-0000000000b1', '00000000-0000-4000-8000-0000000000b2',
-             '00000000-0000-4000-8000-0000000000b3', '00000000-0000-4000-8000-0000000000b4');
-
-update public.profiles set participant_type = 'member', home_country = 'Canada' where id = '00000000-0000-4000-8000-0000000000b0';
-update public.profiles set home_country = 'Germany', home_university = 'TU Munich', show_home_university = true, major = 'Engineering',
-  interests = '{skiing,food}', custom_interests = '{Board games}', social_handle = '@lena.in.yyc', show_social = true, housing_status = 'on_campus'
-where id = '00000000-0000-4000-8000-0000000000b1';
-update public.profiles set home_country = 'Japan', interests = '{skiing,music}', housing_status = 'on_campus' where id = '00000000-0000-4000-8000-0000000000b2';
-update public.profiles set home_country = 'Portugal', interests = '{food,sports}', housing_status = 'looking' where id = '00000000-0000-4000-8000-0000000000b3';
-update public.profiles set home_country = 'India', interests = '{hiking}', housing_status = 'off_campus' where id = '00000000-0000-4000-8000-0000000000b4';
-
-insert into public.admins (user_id, university_id) values
-  ('00000000-0000-4000-8000-0000000000b0', '00000000-0000-4000-8000-000000000001');
-
-insert into public.profile_terms (profile_id, term_id)
-select id, '00000000-0000-4000-8000-0000000000a1' from public.profiles
-where id in ('00000000-0000-4000-8000-0000000000b0', '00000000-0000-4000-8000-0000000000b1', '00000000-0000-4000-8000-0000000000b2',
-             '00000000-0000-4000-8000-0000000000b3', '00000000-0000-4000-8000-0000000000b4');
-
--- ───────────── Demo posts ─────────────
-insert into public.posts (id, term_id, author_id, body, is_pinned, created_at, event_id) values
-  ('00000000-0000-4000-8000-0000000000c0', '00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-0000000000b0',
-   'Be kind, no spam or scams, and never post someone else''s personal info. Membership is self-declared — nobody here is verified by the university.', true, now() - interval '3 days', null),
-  ('00000000-0000-4000-8000-0000000000c1', '00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-0000000000b1',
-   'Hallo! Coming from Germany for Winter 2027, studying engineering. Into skiing, board games and finding good ramen. Anyone planning a ski day in February? Happy to coordinate.', false, now() - interval '2 hours', null),
-  ('00000000-0000-4000-8000-0000000000c2', '00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-0000000000b3',
-   'Still looking for a room for January. Has anyone used the off-campus resources in the Housing card? Also — what areas are easy for getting to campus by train?', false, now() - interval '5 hours', null),
-  ('00000000-0000-4000-8000-0000000000c3', '00000000-0000-4000-8000-0000000000a1', '00000000-0000-4000-8000-0000000000b4',
-   'Saw the Banff snowshoe trip on Jan 18 in the calendar — anyone want to go together? I''ll book through the organizer''s site.', false, now() - interval '1 day', '00000000-0000-4000-8000-0000000000e5');
-
-insert into public.replies (post_id, author_id, body, created_at) values
-  ('00000000-0000-4000-8000-0000000000c1', '00000000-0000-4000-8000-0000000000b2',
-   'I''m in! Never skied before though — does anyone know if the resorts do beginner packages?', now() - interval '1 hour');
