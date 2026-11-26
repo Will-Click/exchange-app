@@ -228,8 +228,12 @@ The MVP covers the PRD's core journey. Not built yet:
 
 ENTI 333 L02, Fall 2026:
 
-- Will Johannson — project owner
-- *Add team members here*
+- Logan Greenough
+- William Johannson — project owner
+- David Nuber
+- Luzi Schoen
+- Leo Smith Calvez
+- Henri Tervo
 
 ## License
 
