@@ -6,19 +6,29 @@ A starting point for incoming exchange students: a required-steps checklist, an 
 
 ## Run it locally
 
-Requires Docker (Colima works: `colima start`) and the Supabase CLI.
+The database is a hosted Supabase project on the **free plan**: project `exchange-app`, ref `baalpigrjwdfelfuccaf`, region ca-central-1. No Docker is needed.
 
 ```bash
 npm install
-supabase start          # local Postgres + Auth in Docker
-supabase db reset       # applies supabase/migrations and supabase/seed.sql
-cp .env.example .env.local   # then paste the publishable key from `supabase status`
-npm run dev             # http://localhost:3000
+cp .env.example .env.local   # set the URL and the anon/publishable key (Supabase dashboard → Project Settings → API)
+npm run dev                  # http://localhost:3000
 ```
 
-Supabase Studio (the database UI) is at http://127.0.0.1:54323.
+`.env.local` and `.env.db` (the DB password) stay on your machine and are gitignored.
 
-### Demo accounts (local seed only)
+### Changing the schema
+
+Add a new file in `supabase/migrations`, then push it to the hosted project:
+
+```bash
+supabase link --project-ref baalpigrjwdfelfuccaf
+supabase db push              # add --include-seed only on an empty database
+supabase config push          # after editing supabase/config.toml (auth settings)
+```
+
+Free-plan projects pause after a week with no activity. To resume one, open it in the Supabase dashboard and click Restore.
+
+### Demo accounts (seeded into the hosted project)
 
 Every demo account uses the password `demo-password-2027`.
 
