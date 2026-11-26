@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Exchange app (working name: chinook)
 
-## Getting Started
+A starting point for incoming exchange students: a required-steps checklist, an events calendar and a semester community board, plus an admin console. It launches with the University of Calgary, and the data model already supports adding more universities.
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router, server actions) + Tailwind 4 + Supabase (Postgres, Auth, row-level security). No email sending yet. Email confirmation is off, and there's no password reset.
+
+## Run it locally
+
+Requires Docker (Colima works: `colima start`) and the Supabase CLI.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+supabase start          # local Postgres + Auth in Docker
+supabase db reset       # applies supabase/migrations and supabase/seed.sql
+cp .env.example .env.local   # then paste the publishable key from `supabase status`
+npm run dev             # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Supabase Studio (the database UI) is at http://127.0.0.1:54323.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo accounts (local seed only)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Every demo account uses the password `demo-password-2027`.
 
-## Learn More
+| Email | Role |
+|---|---|
+| admin@example.com | Admin for UCalgary (sees the **Admin** tab) |
+| lena@example.com | Student, Winter 2027 |
 
-To learn more about Next.js, take a look at the following resources:
+To try the full sign-up flow, create a new account from **Sign up**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Where things are
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Path | What |
+|---|---|
+| `src/app/page.tsx` | Landing page |
+| `src/app/login`, `src/app/onboarding/*` | Log in and the 4-step sign-up (step 1 creates the account) |
+| `src/app/dashboard` | Before arrival: rule-based required checklist, housing and guides |
+| `src/app/events` | Calendar and list, filters, event details, activity ideas |
+| `src/app/community` | Semester board: posts, replies, reports, member profiles |
+| `src/app/admin/*` | Admin console: events (add/edit/cancel/delete), users (suspend, make admin), reports (hide/dismiss) |
+| `src/app/actions/*` | Server actions (all writes) |
+| `src/lib/brand.ts` | Product name. Change it here. |
+| `supabase/migrations` | Schema and row-level security policies |
+| `supabase/seed.sql` | UCalgary, Winter/Spring/Fall 2027, checklist, events, demo members |
 
-## Deploy on Vercel
+## How privacy works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Members can read only their own row in `profiles`.
+- Everyone else is read through the `member_profiles` view. It drops every field the owner hasn't switched on, and it only shows members of the same university.
+- Login email, country, dates and housing status never reach the view.
+- Admins are scoped per university in the `admins` table. Every content table allows writes only for that university's admins.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Checklist rules
+
+Each `checklist_items` row has an `applies_to` rule, for example:
+
+- `{"home_countries": ["Germany"]}`
+- `{"stay": "short"}`, where "short" means the student's selected semesters span 6 months or less
+
+If a student's home country isn't in `universities.reviewed_countries`, the dashboard shows "Requirements need confirmation" and links to the official IRCC tool. It doesn't guess.
