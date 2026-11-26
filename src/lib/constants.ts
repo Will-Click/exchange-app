@@ -11,11 +11,8 @@ export const INTERESTS = [
 
 export const interestLabel = (id: string) => INTERESTS.find((i) => i.id === id)?.label ?? id;
 
-export const COUNTRIES = [
-  "Germany", "Austria", "Switzerland", "France", "Netherlands", "Belgium", "Spain", "Italy", "Portugal", "Ireland",
-  "United Kingdom", "Sweden", "Denmark", "Norway", "Finland", "Australia", "New Zealand", "Japan", "South Korea",
-  "Singapore", "Taiwan", "Hong Kong", "China", "India", "Mexico", "Brazil", "Chile", "United States", "Other",
-];
+// Launch scope: only students travelling from Germany for now.
+export const COUNTRIES = ["Germany"];
 
 export const MAJORS = ["Business", "Computer Science", "Engineering", "Kinesiology", "Psychology", "Economics", "Biology", "Law"];
 

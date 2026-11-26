@@ -74,8 +74,7 @@ export function AboutForm({ signedIn, editing, email, initial }: { signedIn: boo
       <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
         <div className="flex flex-col gap-2">
           <label className="lbl" htmlFor="res">Country you&apos;re travelling from <span className="req">Required</span><span className="priv"><Lock />Private</span></label>
-          <select id="res" name="home_country" className="inp" defaultValue={f.home_country} required>
-            <option value="" disabled>Choose a country</option>
+          <select id="res" name="home_country" className="inp" defaultValue={f.home_country || COUNTRIES[0]} required>
             {COUNTRIES.map((c) => <option key={c} value={c}>{c === "Other" ? "Other…" : c}</option>)}
           </select>
           <p className="hint">Where you live now or are departing from. It decides which entry steps you see.</p>

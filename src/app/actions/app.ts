@@ -53,16 +53,20 @@ export async function createReply(_: PostState, form: FormData): Promise<PostSta
   return { ok: Date.now() };
 }
 
-export async function deletePost(postId: string) {
+export async function deletePost(postId: string): Promise<{ error?: string }> {
   const { supabase } = await userOrRedirect();
-  await supabase.from("posts").delete().eq("id", postId);
+  const { data, error } = await supabase.from("posts").delete().eq("id", postId).select("id");
+  if (error || !data?.length) return { error: "Couldn't delete this post. Try again." };
   revalidatePath("/community");
+  return {};
 }
 
-export async function deleteReply(replyId: string) {
+export async function deleteReply(replyId: string): Promise<{ error?: string }> {
   const { supabase } = await userOrRedirect();
-  await supabase.from("replies").delete().eq("id", replyId);
+  const { data, error } = await supabase.from("replies").delete().eq("id", replyId).select("id");
+  if (error || !data?.length) return { error: "Couldn't delete this reply. Try again." };
   revalidatePath("/community");
+  return {};
 }
 
 export async function reportContent(target: { postId?: string; replyId?: string }, reason: string) {

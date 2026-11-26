@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createPost, createReply, deletePost, deleteReply, reportContent } from "@/app/actions/app";
 import { Chat, Flag } from "@/components/icons";
 
@@ -31,26 +32,41 @@ export function PostActions({ postId, replyId, replyCount, mine, compact }: {
   postId?: string; replyId?: string; replyCount?: number; mine: boolean; compact?: boolean;
 }) {
   const [reported, setReported] = useState(false);
-  const [, start] = useTransition();
+  const [confirming, setConfirming] = useState(false);
+  const [error, setError] = useState<string>();
+  const [deleting, start] = useTransition();
+  const router = useRouter();
   const report = () => {
     const reason = window.prompt("What's wrong with this? (optional)") ;
     if (reason === null) return;
     start(async () => { const r = await reportContent({ postId: replyId ? undefined : postId, replyId }, reason); setReported(r.ok); });
   };
+  // Inline confirm instead of window.confirm, which some embedded browsers silently block.
   const remove = () => {
-    if (!window.confirm("Delete this for everyone? This can't be undone.")) return;
-    start(async () => { if (replyId) await deleteReply(replyId); else if (postId) await deletePost(postId); });
+    setError(undefined);
+    start(async () => {
+      const r = replyId ? await deleteReply(replyId) : postId ? await deletePost(postId) : {};
+      if (r.error) { setError(r.error); setConfirming(false); return; }
+      router.refresh();
+    });
   };
   return (
     <div className={compact ? "flex items-start" : "flex flex-wrap gap-1 border-t border-line pt-2"}>
       {!compact && <span className="act cursor-default"><Chat size={16} />{replyCount} {replyCount === 1 ? "reply" : "replies"}</span>}
       <span className={compact ? "" : "ml-auto"}>
         {mine
-          ? <button type="button" className="act" onClick={remove}>Delete</button>
+          ? confirming
+            ? <span className="inline-flex flex-wrap items-center gap-1">
+                <span className="text-[13px] text-muted">Delete for everyone?</span>
+                <button type="button" className="act font-bold text-[#B23A1E]" onClick={remove} disabled={deleting}>{deleting ? "Deleting…" : "Yes, delete"}</button>
+                <button type="button" className="act" onClick={() => setConfirming(false)} disabled={deleting}>Cancel</button>
+              </span>
+            : <button type="button" className="act" onClick={() => setConfirming(true)}>Delete</button>
           : reported
             ? <span className="act cursor-default">Reported — thanks</span>
             : <button type="button" className="act" onClick={report} aria-label={replyId ? "Report reply" : "Report post"}><Flag />{compact ? "" : "Report"}</button>}
       </span>
+      {error && <p className="err m-0 w-full" role="alert">{error}</p>}
     </div>
   );
 }
